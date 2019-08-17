@@ -11,8 +11,24 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="theme-color" content="#222">
+<script>
+    (function(){
+        if(''){
+            if (prompt('请输入文章密码') !== ''){
+                alert('密码错误！');
+                history.back();
+            }
+        }
+    })();
+</script>
 
 
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
 
 
 
@@ -88,7 +104,7 @@
 <meta property="og:description" content="一、什么是动态语言和Runtime静态语言：编译阶段就要决定调用哪个函数，如果函数未实现就会编译报错。 动态语言：编译阶段并不能决定真正调用哪个函数，只要函数声明过即使没有实现也不会报错。 Runtime：一套底层纯C语言API，OC代码最终都会被编译器转化为运行时代码，通过消息机制决定函数调用方式，这也是OC作为动态语言使用的基础。 二、消息机制的基本原理1.编译阶段OC的方法调用都是类似[re">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2019/08/16/Objective-C中的Runtime/180321708.png">
-<meta property="og:updated_time" content="2019-08-16T10:31:36.309Z">
+<meta property="og:updated_time" content="2019-08-17T11:04:00.929Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Objective-C中的Runtime">
 <meta name="twitter:description" content="一、什么是动态语言和Runtime静态语言：编译阶段就要决定调用哪个函数，如果函数未实现就会编译报错。 动态语言：编译阶段并不能决定真正调用哪个函数，只要函数声明过即使没有实现也不会报错。 Runtime：一套底层纯C语言API，OC代码最终都会被编译器转化为运行时代码，通过消息机制决定函数调用方式，这也是OC作为动态语言使用的基础。 二、消息机制的基本原理1.编译阶段OC的方法调用都是类似[re">
@@ -163,7 +179,7 @@
       </a>
     </div>
       
-        <h1 class="site-subtitle" itemprop="description"></h1>
+        <h1 class="site-subtitle" itemprop="description">记录学习路上的点点滴滴</h1>
       
   </div>
 
@@ -431,6 +447,37 @@
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.4k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
 
           
 
@@ -585,6 +632,16 @@
     
     
 
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+      
+    </div>
+
     
 
     
@@ -699,7 +756,7 @@
               <p class="site-author-name" itemprop="name">TwinterT</p>
               <p class="site-description motion-element" itemprop="description"></p>
           </div>
-
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="298" height="52" src="//music.163.com/outchain/player?type=2&id=740530&auto=1&height=32"></iframe>
           <nav class="site-state motion-element">
 
             
@@ -822,18 +879,13 @@
 </div>
 
 
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
 
 
 
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
 
 
 <div>
+
 <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <span id="busuanzi_container_site_pv" style="display:none">
     本站总访问量 <span id="busuanzi_value_site_pv"></span> 次
@@ -845,6 +897,11 @@
 </div>
 
 
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共6.3k字</span>
+</div>
 
         
 <div class="busuanzi-count">
