@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Objective-C,Runtime,消息机制,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="一、什么是动态语言和Runtime静态语言：编译阶段就要决定调用哪个函数，如果函数未实现就会编译报错。 动态语言：编译阶段并不能决定真正调用哪个函数，只要函数声明过即使没有实现也不会报错。 Runtime：一套底层纯C语言API，OC代码最终都会被编译器转化为运行时代码，通过消息机制决定函数调用方式，这也是OC作为动态语言使用的基础。 二、消息机制的基本原理1.编译阶段OC的方法调用都是类似[re">
+<meta name="keywords" content="Objective-C,Runtime,消息机制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Objective-C中的Runtime">
+<meta property="og:url" content="http://yoursite.com/2019/08/16/Objective-C中的Runtime/index.html">
+<meta property="og:site_name" content="TwinterT">
+<meta property="og:description" content="一、什么是动态语言和Runtime静态语言：编译阶段就要决定调用哪个函数，如果函数未实现就会编译报错。 动态语言：编译阶段并不能决定真正调用哪个函数，只要函数声明过即使没有实现也不会报错。 Runtime：一套底层纯C语言API，OC代码最终都会被编译器转化为运行时代码，通过消息机制决定函数调用方式，这也是OC作为动态语言使用的基础。 二、消息机制的基本原理1.编译阶段OC的方法调用都是类似[re">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2019/08/16/Objective-C中的Runtime/180321708.png">
+<meta property="og:updated_time" content="2019-08-16T10:31:36.309Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Objective-C中的Runtime">
+<meta name="twitter:description" content="一、什么是动态语言和Runtime静态语言：编译阶段就要决定调用哪个函数，如果函数未实现就会编译报错。 动态语言：编译阶段并不能决定真正调用哪个函数，只要函数声明过即使没有实现也不会报错。 Runtime：一套底层纯C语言API，OC代码最终都会被编译器转化为运行时代码，通过消息机制决定函数调用方式，这也是OC作为动态语言使用的基础。 二、消息机制的基本原理1.编译阶段OC的方法调用都是类似[re">
+<meta name="twitter:image" content="http://yoursite.com/2019/08/16/Objective-C中的Runtime/180321708.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/08/16/Objective-C中的Runtime/">
+
+
+
+
+
+  <title>Objective-C中的Runtime | TwinterT</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">TwinterT</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-schedule">
+          <a href="/schedule/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br>
+            
+            日程表
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-sitemap">
+          <a href="/sitemap.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>
+            
+            站点地图
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br>
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/16/Objective-C中的Runtime/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="TwinterT">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TwinterT">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Objective-C中的Runtime</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-16T18:12:56+08:00">
+                2019-08-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Objective-C/" itemprop="url" rel="index">
+                    <span itemprop="name">Objective-C</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Objective-C/进阶/" itemprop="url" rel="index">
+                    <span itemprop="name">进阶</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/08/16/Objective-C中的Runtime/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/08/16/Objective-C中的Runtime/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>次
+            </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span id="busuanzi_value_page_pv"></span>次阅读
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="一、什么是动态语言和Runtime"><a href="#一、什么是动态语言和Runtime" class="headerlink" title="一、什么是动态语言和Runtime"></a>一、什么是动态语言和Runtime</h3><p><strong>静态语言</strong>：编译阶段就要决定调用哪个函数，如果函数未实现就会编译报错。</p>
+<p><strong>动态语言</strong>：编译阶段并不能决定真正调用哪个函数，只要函数声明过即使没有实现也不会报错。</p>
+<p><strong>Runtime</strong>：一套底层纯C语言API，OC代码最终都会被编译器转化为运行时代码，通过消息机制决定函数调用方式，这也是OC作为动态语言使用的基础。</p>
+<h3 id="二、消息机制的基本原理"><a href="#二、消息机制的基本原理" class="headerlink" title="二、消息机制的基本原理"></a>二、消息机制的基本原理</h3><h5 id="1-编译阶段"><a href="#1-编译阶段" class="headerlink" title="1.编译阶段"></a>1.编译阶段</h5><p>OC的方法调用都是类似[receiver selector]的形式，在编译阶段[receiver selector]方法被编译器转化</p>
+<ul>
+<li>不带参数的方法被编译为：objc_msgSend(receiver，selector)</li>
+<li>带参数的方法被编译为：objc_msgSend(recevier，selector，org1，org2，…)</li>
+</ul>
+<h5 id="2-运行时阶段"><a href="#2-运行时阶段" class="headerlink" title="2.运行时阶段"></a>2.运行时阶段</h5><p>消息接收者recever寻找对应的selector，也分为两种情况</p>
+<ul>
+<li>接收者能找到对应的selector，直接执行接收receiver对象的selector方法</li>
+<li>接收者找不到对应的selector，消息被转发或者临时向接收者添加这个selector对应的实现内容，否则崩溃</li>
+</ul>
+<h3 id="三、与Runtime的交互"><a href="#三、与Runtime的交互" class="headerlink" title="三、与Runtime的交互"></a>三、与Runtime的交互</h3><p>按照与Runtime交互程度从低到高排序分为以下三种方式</p>
+<h5 id="1-OC源代码-Objec-C-Source-Code"><a href="#1-OC源代码-Objec-C-Source-Code" class="headerlink" title="1.OC源代码(Objec-C Source Code)"></a>1.OC源代码(Objec-C Source Code)</h5><p>OC代码会在编译阶段被编译器转化。OC中的类、方法和协议等在Runtime中都由一些数据结构来定义。所以，我们平时直接使用OC编写代码，其实这已经是在和Runtime进行交互了，只不过这个过程对于我们来说是透明的。</p>
+<h5 id="2-NSObject方法-NSObject-Methods"><a href="#2-NSObject方法-NSObject-Methods" class="headerlink" title="2.NSObject方法(NSObject Methods)"></a>2.NSObject方法(NSObject Methods)</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">+ (Class)class OBJC_SWIFT_UNAVAILABLE(&quot;use &apos;aClass.self&apos; instead&quot;);  //返回Class对象</span><br><span class="line">- (BOOL)conformsToProtocol:(Protocol *)aProtocol;  //判断当前对象是否实现了协议</span><br><span class="line">- (BOOL)isKindOfClass:(Class)aClass;   //判断是否是自己或者父类</span><br><span class="line">- (BOOL)isMemberOfClass:(Class)aClass;    //判断是否是自己</span><br><span class="line">- (BOOL)respondsToSelector:(SEL)aSelector;   //判断是否实现或者继承了某个方法</span><br><span class="line">- (IMP)methodForSelector:(SEL)aSelector;    //返回该方法的实现的地址</span><br></pre></td></tr></table></figure>
+
+<h5 id="3-使用Runtime函数"><a href="#3-使用Runtime函数" class="headerlink" title="3.使用Runtime函数"></a>3.使用Runtime函数</h5><p>Runtime系统是一个由一系列函数和数据结构组成，具有公共接口的动态共享库。头文件存放于/usr/include/objc目录下。在我们工程代码里引用Runtime的头文件，同样能够实现类似OC代码的效果，一些代码示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;objc/runtime.h&gt;</span><br><span class="line">#import &lt;objc/message.h&gt;</span><br><span class="line"></span><br><span class="line">Class viewClass = objc_getClass(&quot;UIView&quot;);   //相当于 Class viewClass = [UIView class];</span><br><span class="line"></span><br><span class="line">UIView *view = ((id (*)(id, SEL))objc_msgSend)((id)viewClass,sel_registerName(&quot;alloc&quot;));    //相当于 UIView *view = [UIView alloc];</span><br><span class="line">    </span><br><span class="line">view = ((id (*)(id, SEL))objc_msgSend)((id)viewClass, sel_registerName(&quot;init&quot;));    //相当于 view = [view init];</span><br></pre></td></tr></table></figure>
+
+<p>注：要使用objc_msgSend方法需要在项目的Build Settings里的Enable Strict Checking of objc_msgSend Calls改为No。</p>
+<h3 id="四、Runtime的数据结构"><a href="#四、Runtime的数据结构" class="headerlink" title="四、Runtime的数据结构"></a>四、Runtime的数据结构</h3><h5 id="1-id—-gt-objc-object"><a href="#1-id—-gt-objc-object" class="headerlink" title="1.id—&gt;objc_object"></a>1.id—&gt;objc_object</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">///A pointer to an instance of a class.</span><br><span class="line">typedef struct objc_object *id;</span><br><span class="line"></span><br><span class="line">///Represents an instance of a class.</span><br><span class="line">struct objc_object &#123;</span><br><span class="line">    Class _Nonnull isa  OBJC_ISA_AVAILABILITY;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h5 id="2-Class-gt-objc-classs"><a href="#2-Class-gt-objc-classs" class="headerlink" title="2.Class - &gt;objc_classs"></a>2.Class - &gt;objc_classs</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">typedef struct objc_class *Class; </span><br><span class="line"></span><br><span class="line">struct objc_class &#123;</span><br><span class="line">    //Runtime把类对象所属类型就叫做元类，用于描述类对象本身所具有的特征,所以objc_class中的isa指针指向的是元类，每个类仅有一个类对象，而每个类对象仅有一个与之相关的元类。</span><br><span class="line">    Class _Nonnull isa  OBJC_ISA_AVAILABILITY;   </span><br><span class="line">  </span><br><span class="line">#if !__OBJC2__</span><br><span class="line">    Class _Nullable super_class                              OBJC2_UNAVAILABLE;  //指向objc_class类所继承的父类，但是如果当前类已经是最顶层的类,则super_class指针为NULL</span><br><span class="line">    const char * _Nonnull name                               OBJC2_UNAVAILABLE;  //类名</span><br><span class="line">    long version                                             OBJC2_UNAVAILABLE;</span><br><span class="line">    long info                                                OBJC2_UNAVAILABLE;</span><br><span class="line">    long instance_size                                       OBJC2_UNAVAILABLE;</span><br><span class="line">    struct objc_ivar_list * _Nullable ivars                  OBJC2_UNAVAILABLE;  //用于存放所有的成员变量和属性信息</span><br><span class="line">    struct objc_method_list * _Nullable * _Nullable methodLists                    OBJC2_UNAVAILABLE;  //存放对象的所有成员方法</span><br><span class="line">    struct objc_cache * _Nonnull cache                       OBJC2_UNAVAILABLE;  //用于记录每次使用类或者实例对象调用的方法。这样每次响应消息的时候，Runtime系统会优先在cache中寻找响应方法</span><br><span class="line">    struct objc_protocol_list * _Nullable protocols          OBJC2_UNAVAILABLE;  //协议链表</span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">&#125; OBJC2_UNAVAILABLE;</span><br></pre></td></tr></table></figure>
+
+<h5 id="3-SEL"><a href="#3-SEL" class="headerlink" title="3.SEL"></a>3.SEL</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">typedef struct objc_selector *SEL;  //SEL在OC中称作方法选择器，用于表示运行时方法的名字</span><br></pre></td></tr></table></figure>
+
+<p>注意：不同类中相同名字的方法对应的方法选择器是相同的。</p>
+<p>获得SEL的三种方法</p>
+<ul>
+<li>使用@selector(方法名字符串);</li>
+<li>使用NSSelectorFromString(@“方法名字符串”);</li>
+<li>使用sel_registerName(“方法名字符串”)；</li>
+</ul>
+<h5 id="4-Ivar"><a href="#4-Ivar" class="headerlink" title="4.Ivar"></a>4.Ivar</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">/// An opaque type that represents an instance variable.</span><br><span class="line">typedef struct objc_ivar *Ivar;</span><br><span class="line"></span><br><span class="line">struct objc_ivar &#123;</span><br><span class="line">    char * Nullable ivar_name                               OBJC2UNAVAILABLE;</span><br><span class="line">    char * Nullable ivar_type                               OBJC2UNAVAILABLE;</span><br><span class="line">    int ivar_offset                                          OBJC2_UNAVAILABLE;</span><br><span class="line">#ifdef LP64</span><br><span class="line">    int space                                                OBJC2_UNAVAILABLE;</span><br><span class="line">#endif</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="5-Method"><a href="#5-Method" class="headerlink" title="5.Method"></a>5.Method</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">/// An opaque type that represents a method in a class definition.</span><br><span class="line">typedef struct objc_method *Method;</span><br><span class="line"></span><br><span class="line">struct objc_method &#123;</span><br><span class="line">    SEL Nonnull method_name                                 OBJC2UNAVAILABLE;  //方法名类型SEL</span><br><span class="line">    char * Nullable method_types                            OBJC2UNAVAILABLE;  //指向存储方法的参数类型和返回值类型</span><br><span class="line">    IMP Nonnull method_imp                                  OBJC2UNAVAILABLE;  //指向方法的实现，即方法名和IMP的映射</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="6-IMP"><a href="#6-IMP" class="headerlink" title="6.IMP"></a>6.IMP</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/// A pointer to the function of a method implementation.</span><br><span class="line">typedef void (IMP)(void / id, SEL, ... */ ); //函数指针的前两个参数必须是id和SEL。</span><br></pre></td></tr></table></figure>
+
+<h3 id="五、深入理解Runtime消息发送"><a href="#五、深入理解Runtime消息发送" class="headerlink" title="五、深入理解Runtime消息发送"></a>五、深入理解Runtime消息发送</h3><h5 id="1-运行时阶段的消息发送的详细步骤"><a href="#1-运行时阶段的消息发送的详细步骤" class="headerlink" title="1.运行时阶段的消息发送的详细步骤"></a>1.<strong>运行时阶段的消息发送的详细步骤</strong></h5><ol>
+<li>检测selector 是不是需要忽略的。比如 Mac OS X 开发，有了垃圾回收就不理会retain,release 这些函数了。</li>
+<li>检测target 是不是nil 对象。ObjC 的特性是允许对一个 nil对象执行任何一个方法不会 Crash，因为会被忽略掉。</li>
+<li>如果上面两个都过了，那就开始查找这个类的 IMP，先从 cache 里面找，若可以找得到就跳到对应的函数去执行。</li>
+<li>如果在cache里找不到就找一下方法列表methodLists。</li>
+<li>如果methodLists找不到，就到超类的方法列表里寻找，一直找，直到找到NSObject类为止。</li>
+<li>如果还找不到，Runtime提供了如下三种方法来处理：<strong>动态方法解析</strong>、<strong>消息接受者重定向</strong>、<strong>消息重定向</strong></li>
+</ol>
+<p><img src="180321708.png" alt="img"></p>
+<h5 id="2-动态方法解析-Dynamic-Method-Resolution"><a href="#2-动态方法解析-Dynamic-Method-Resolution" class="headerlink" title="2.动态方法解析(Dynamic Method Resolution)"></a>2.动态方法解析(Dynamic Method Resolution)</h5><p>没有找到方法时，Runtime为我们提供一次动态添加方法实现的机会，涉及到的方法有</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">+ (BOOL)resolveClassMethod:(SEL)sel  //类方法未找到时调起，可于此添加类方法实现</span><br><span class="line">+ (BOOL)resolveInstanceMethod:(SEL)sel  //实例方法未找到时调起，可于此添加实例方法实现</span><br><span class="line">  </span><br><span class="line">BOOL class_addMethod(Class _Nullable cls, SEL _Nonnull name, IMP _Nonnull imp, const char * _Nullable types)</span><br><span class="line">/* 参数说明依次为： 被添加方法的类，方法名SEL，方法的IMP，方法的返回值和参数编码*/</span><br></pre></td></tr></table></figure>
+
+<p>例子如下所示</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;Person.h&quot;</span><br><span class="line">#import &lt;objc/runtime.h&gt;</span><br><span class="line"></span><br><span class="line">@implementation Person</span><br><span class="line">//重写父类方法：处理类方法</span><br><span class="line">+ (BOOL)resolveClassMethod:(SEL)sel&#123;</span><br><span class="line">    if(sel == @selector(haveMeal:))&#123;</span><br><span class="line">        class_addMethod(object_getClass(self), sel, class_getMethodImplementation(object_getClass(self), @selector(zs_haveMeal:)), &quot;v@&quot;);</span><br><span class="line">        return YES;   //添加函数实现，返回YES</span><br><span class="line">    &#125;</span><br><span class="line">    return [class_getSuperclass(self) resolveClassMethod:sel];</span><br><span class="line">&#125;</span><br><span class="line">//重写父类方法：处理实例方法</span><br><span class="line">+ (BOOL)resolveInstanceMethod:(SEL)sel&#123;</span><br><span class="line">    if(sel == @selector(singSong:))&#123;</span><br><span class="line">        class_addMethod([self class], sel, class_getMethodImplementation([self class], @selector(zs_singSong:)), &quot;v@&quot;);</span><br><span class="line">        return YES;</span><br><span class="line">    &#125;</span><br><span class="line">    return [super resolveInstanceMethod:sel];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">+ (void)zs_haveMeal:(NSString *)food&#123;</span><br><span class="line">    NSLog(@&quot;%s&quot;,__func__);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)zs_singSong:(NSString *)name&#123;</span><br><span class="line">    NSLog(@&quot;%s&quot;,__func__);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意到class_getMethodImplementation的最后一个参数其实是函数的返回值和参数类型编码常用的类型编码有下面这些</p>
+<table>
+<thead>
+<tr>
+<th align="center">类型</th>
+<th align="left">说明</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">c</td>
+<td align="left">A char</td>
+<td>Q</td>
+<td>An unsigned long long</td>
+</tr>
+<tr>
+<td align="center">i</td>
+<td align="left">An int</td>
+<td>f</td>
+<td>A float</td>
+</tr>
+<tr>
+<td align="center">s</td>
+<td align="left">A short</td>
+<td>d</td>
+<td>A double</td>
+</tr>
+<tr>
+<td align="center">l</td>
+<td align="left">A long</td>
+<td>B</td>
+<td>A C++ bool or a C99 _Bool</td>
+</tr>
+<tr>
+<td align="center">q</td>
+<td align="left">A long long</td>
+<td>v</td>
+<td>A void</td>
+</tr>
+<tr>
+<td align="center">C</td>
+<td align="left">An unsigned char</td>
+<td>*</td>
+<td>A character string (char *)</td>
+</tr>
+<tr>
+<td align="center">I</td>
+<td align="left">An unsigned int</td>
+<td>@</td>
+<td>An object (whether statically typed or typed id)</td>
+</tr>
+<tr>
+<td align="center">S</td>
+<td align="left">An unsigned short</td>
+<td>#</td>
+<td>A class object (Class)</td>
+</tr>
+<tr>
+<td align="center">L</td>
+<td align="left">An unsigned long</td>
+<td>:</td>
+<td>A method selector (SEL)</td>
+</tr>
+</tbody></table>
+<h3 id="3-消息接收者重定向"><a href="#3-消息接收者重定向" class="headerlink" title="3.消息接收者重定向"></a>3.消息接收者重定向</h3><p>使用Runtime替换消息接收者的为其他对象，从而保证程序的继续执行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">//重定向类方法的消息接收者，返回一个类</span><br><span class="line">+ (id)forwardingTargetForSelector:(SEL)aSelector</span><br><span class="line"></span><br><span class="line">//重定向实例方法的消息接受者，返回一个实例对象</span><br><span class="line">- (id)forwardingTargetForSelector:(SEL)aSelector</span><br><span class="line">  </span><br><span class="line">//以下是使用示例</span><br><span class="line">//重定向类方法：返回一个类对象</span><br><span class="line">+ (id)forwardingTargetForSelector:(SEL)aSelector&#123;</span><br><span class="line">    if (aSelector == @selector(takeExam:)) &#123;</span><br><span class="line">         </span><br><span class="line">        return [Student class];</span><br><span class="line">    &#125;</span><br><span class="line">    return [super forwardingTargetForSelector:aSelector];</span><br><span class="line">&#125;</span><br><span class="line">//重定向实例方法：返回类的实例</span><br><span class="line">- (id)forwardingTargetForSelector:(SEL)aSelector&#123;</span><br><span class="line">    if (aSelector == @selector(learnKnowledge:)) &#123;</span><br><span class="line">        return self.student;</span><br><span class="line">    &#125;</span><br><span class="line">    return [super forwardingTargetForSelector:aSelector];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>动态方法解析阶段返回NO时，我们可以通过forwardingTargetForSelector可以修改消息的接收者，该方法返回参数是一个对象，如果这个对象是非nil，非self，系统会将运行的消息转发给这个对象执行。否则，继续查找其他流程。</p>
+<h5 id="4-消息重定向"><a href="#4-消息重定向" class="headerlink" title="4.消息重定向"></a>4.消息重定向</h5><p>当以上两种方法无法生效，那么这个对象会因为找不到相应的方法实现而无法响应消息，此时Runtime系统会通过forwardInvocation：消息通知该对象，给予此次消息发送最后一次寻找IMP的机会</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">- (void)forwardInvocation:(NSInvocation *)anInvocation；</span><br><span class="line">/*</span><br><span class="line">anInvocation是forwardInvocation唯一参数，它封装了原始的消息和消息参数</span><br><span class="line">所以我们得重写另一个函数：methodSignatureForSelector</span><br><span class="line">这是因为在forwardInvocation: 消息发送前，Runtime系统会向对象发送methodSignatureForSelector消息，并取到返回的方法签名用于生成NSInvocation对象</span><br><span class="line">*/</span><br><span class="line">  </span><br><span class="line">//以下是示例</span><br><span class="line">-(void)forwardInvocation:(NSInvocation *)anInvocation&#123;</span><br><span class="line">    //1.从anInvocation中获取消息</span><br><span class="line">    SEL sel = anInvocation.selector;</span><br><span class="line">    //2.判断Student方法是否可以响应应sel</span><br><span class="line">    if ([self.student respondsToSelector:sel]) &#123;</span><br><span class="line">        //2.1若可以响应，则将消息转发给其他对象处理</span><br><span class="line">        [anInvocation invokeWithTarget:self.student];</span><br><span class="line">    &#125;else&#123;</span><br><span class="line">        //2.2若仍然无法响应，则报错：找不到响应方法</span><br><span class="line">        [self doesNotRecognizeSelector:sel];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//需要从这个方法中获取的信息来创建NSInvocation对象，因此我们必须重写这个方法，为给定的selector提供一个合适的方法签名。</span><br><span class="line">- (NSMethodSignature*)methodSignatureForSelector:(SEL)aSelector&#123;</span><br><span class="line">    NSMethodSignature *methodSignature = [super methodSignatureForSelector:aSelector];</span><br><span class="line">    if (!methodSignature) &#123;</span><br><span class="line">        methodSignature = [NSMethodSignature signatureWithObjCTypes:&quot;v@:*&quot;];</span><br><span class="line">    &#125;</span><br><span class="line">    return methodSignature;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h5><ul>
+<li>forwardingTargetForSelector仅支持一个对象的返回，也就是说消息只能被转发给一个对象，而forwardInvocation可以将消息同时转发给任意多个对象，这就是两者的最大区别。</li>
+<li>forwardInvocation能够修改消息的内容，从而实现更强大的功能</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Objective-C/" rel="tag"><i class="fa fa-tag"></i> Objective-C</a>
+          
+            <a href="/tags/Runtime/" rel="tag"><i class="fa fa-tag"></i> Runtime</a>
+          
+            <a href="/tags/消息机制/" rel="tag"><i class="fa fa-tag"></i> 消息机制</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/16/Objective-C中的内存管理/" rel="next" title="Objective-C中的内存管理">
+                <i class="fa fa-chevron-left"></i> Objective-C中的内存管理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">TwinterT</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/TwinterT" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:twinter@mail.ustc.edu.cn" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/JKZhang" title="JKZhang" target="_blank">JKZhang</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、什么是动态语言和Runtime"><span class="nav-text">一、什么是动态语言和Runtime</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、消息机制的基本原理"><span class="nav-text">二、消息机制的基本原理</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-编译阶段"><span class="nav-text">1.编译阶段</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-运行时阶段"><span class="nav-text">2.运行时阶段</span></a></li></ol></li></ol><li class="nav-item nav-level-3"><a class="nav-link" href="#三、与Runtime的交互"><span class="nav-text">三、与Runtime的交互</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-OC源代码-Objec-C-Source-Code"><span class="nav-text">1.OC源代码(Objec-C Source Code)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-NSObject方法-NSObject-Methods"><span class="nav-text">2.NSObject方法(NSObject Methods)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-使用Runtime函数"><span class="nav-text">3.使用Runtime函数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#四、Runtime的数据结构"><span class="nav-text">四、Runtime的数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-id—-gt-objc-object"><span class="nav-text">1.id—&gt;objc_object</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-Class-gt-objc-classs"><span class="nav-text">2.Class - &gt;objc_classs</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-SEL"><span class="nav-text">3.SEL</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-Ivar"><span class="nav-text">4.Ivar</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-Method"><span class="nav-text">5.Method</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-IMP"><span class="nav-text">6.IMP</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#五、深入理解Runtime消息发送"><span class="nav-text">五、深入理解Runtime消息发送</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-运行时阶段的消息发送的详细步骤"><span class="nav-text">1.运行时阶段的消息发送的详细步骤</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-动态方法解析-Dynamic-Method-Resolution"><span class="nav-text">2.动态方法解析(Dynamic Method Resolution)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-消息接收者重定向"><span class="nav-text">3.消息接收者重定向</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#4-消息重定向"><span class="nav-text">4.消息重定向</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#总结"><span class="nav-text">总结</span></a></li></ol></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">TwinterT</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+<div>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<span id="busuanzi_container_site_pv" style="display:none">
+    本站总访问量 <span id="busuanzi_value_site_pv"></span> 次
+    <span class="post-meta-divider">|</span>
+</span>
+<span id="busuanzi_container_site_uv" style="display:none">
+    有<span id="busuanzi_value_site_uv"></span>人看过我的博客啦
+</span>
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站访问总量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://TwinterT.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2019/08/16/Objective-C中的Runtime/';
+          this.page.identifier = '2019/08/16/Objective-C中的Runtime/';
+          this.page.title = 'Objective-C中的Runtime';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://TwinterT.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
