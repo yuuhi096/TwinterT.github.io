@@ -320,6 +320,224 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/03/application和view的生命周期/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="TwinterT">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TwinterT">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/03/application和view的生命周期/" itemprop="url">application和view的生命周期</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-03T17:40:51+08:00">
+                2019-09-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/09/03/application和view的生命周期/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/09/03/application和view的生命周期/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  376
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="一、application的生命周期"><a href="#一、application的生命周期" class="headerlink" title="一、application的生命周期"></a>一、application的生命周期</h3><p><img src="/2019/09/03/application和view的生命周期/application.png" alt="application"></p>
+<h5 id="应用的五种状态介绍"><a href="#应用的五种状态介绍" class="headerlink" title="应用的五种状态介绍"></a>应用的五种状态介绍</h5><ol>
+<li>Not Running：应用没有运行或被系统终止</li>
+<li>Inactive：应用正在进入前台状态，但是还不能接受事件处理</li>
+<li>Active：应用进入前台状态，能接受事件处理</li>
+<li>Background：应用进入后台后，依然能够执行代码，如果有则执行，如果没有或者执行完毕，应用会马上进入挂起状态</li>
+<li>Suspended：被挂起的应用进入一种冷冻状态，不能执行代码，如果系统内存不够，应用会被终止。</li>
+</ol>
+<h5 id="应用的状态变化时的回调方法"><a href="#应用的状态变化时的回调方法" class="headerlink" title="应用的状态变化时的回调方法"></a>应用的状态变化时的回调方法</h5><ol>
+<li><p>application:didFinishLaunchingWithOptions:</p>
+<p>应用启动时调用方法(Not running到Inactive)，这个时候会实例化根视图控制器</p>
+</li>
+<li><p>applicationDidBecomeActive:</p>
+<p>当应用从Inactive到Active状态时调用该方法，这个阶段可以恢复UI的状态</p>
+</li>
+<li><p>applicationDidEnterBackground:</p>
+<p>当应用从Active到Background状态时调用该方法，这个阶段可以保存用户数据，释放一些资源</p>
+</li>
+<li><p>applicationWillTerminate:</p>
+<p>当应用从Background到suspend状态时调用该方法，这个阶段释放一些资源，也可以保存用户数据，但是要注意的时当内存清除时不会调用这个方法</p>
+</li>
+<li><p>applicationWillEnterForeground:</p>
+<p>应用从Background到Inactive状态时调用该方法，这个阶段可以恢复用户数据</p>
+</li>
+<li><p>applicationWillResignActive:</p>
+<p>应用从Active到Inactive状态时调用该方法，这个阶段可以保存UI的状态。</p>
+</li>
+</ol>
+<h3 id="二、View的生命周期"><a href="#二、View的生命周期" class="headerlink" title="二、View的生命周期"></a>二、View的生命周期</h3><p><img src="/2019/09/03/application和view的生命周期/view.png" alt="view"></p>
+<p>需要注意的时ViewDidLoad方法只会调用一次</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    <div>
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/03/CocoaPods简介/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2731,7 +2949,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2742,7 +2960,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2753,7 +2971,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">16</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -2851,7 +3069,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共14.1k字</span>
+  <span class="post-count">博客全站共14.5k字</span>
 </div>
 
         

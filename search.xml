@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[application和view的生命周期]]></title>
+    <url>%2F2019%2F09%2F03%2Fapplication%E5%92%8Cview%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%2F</url>
+    <content type="text"><![CDATA[一、application的生命周期 应用的五种状态介绍 Not Running：应用没有运行或被系统终止 Inactive：应用正在进入前台状态，但是还不能接受事件处理 Active：应用进入前台状态，能接受事件处理 Background：应用进入后台后，依然能够执行代码，如果有则执行，如果没有或者执行完毕，应用会马上进入挂起状态 Suspended：被挂起的应用进入一种冷冻状态，不能执行代码，如果系统内存不够，应用会被终止。 应用的状态变化时的回调方法 application:didFinishLaunchingWithOptions: 应用启动时调用方法(Not running到Inactive)，这个时候会实例化根视图控制器 applicationDidBecomeActive: 当应用从Inactive到Active状态时调用该方法，这个阶段可以恢复UI的状态 applicationDidEnterBackground: 当应用从Active到Background状态时调用该方法，这个阶段可以保存用户数据，释放一些资源 applicationWillTerminate: 当应用从Background到suspend状态时调用该方法，这个阶段释放一些资源，也可以保存用户数据，但是要注意的时当内存清除时不会调用这个方法 applicationWillEnterForeground: 应用从Background到Inactive状态时调用该方法，这个阶段可以恢复用户数据 applicationWillResignActive: 应用从Active到Inactive状态时调用该方法，这个阶段可以保存UI的状态。 二、View的生命周期 需要注意的时ViewDidLoad方法只会调用一次]]></content>
+      <categories>
+        <category>iOS</category>
+      </categories>
+      <tags>
+        <tag>iOS</tag>
+        <tag>生命周期</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[CocoaPods简介]]></title>
     <url>%2F2019%2F09%2F03%2FCocoaPods%E7%AE%80%E4%BB%8B%2F</url>
     <content type="text"><![CDATA[一、简介CocoaPods 是开发 OS X 和 iOS 应用程序的一个第三方库的依赖管理工具。利用 CocoaPods，可以定义自己的依赖关系 (称作 pods)，并且随着时间的变化，以及在整个开发环境中对第三方库的版本管理非常方便。 在项目中的引入的依赖都会记录在Podfile文件中，CocoaPods会解析这些库的依赖并且自动下载源码，然后把它一起打包链接到Xcode中来构建你的项目。 在工程中引入第三方代码会涉及到许多内容。CocoaPods 简化了这一切，它能够自动配置编译选项。 通过 CocoaPods，可以很方便的查找到新的第三方库。 二、核心组件1.CocoaPods/CocoaPod每当执行一个 pod 命令时，这个组件都将被激活。该组件包括了所有使用 CocoaPods 涉及到的功能 2.CocoaPods/CoreCore 组件提供支持与 CocoaPods 相关文件的处理，文件主要是 Podfile 和 podspecs。 Podfile：用于定义项目所需要使用的第三方库，内容如下，其中pod后面的字段就代表安装的库 库中版本的控制123456789pod 'AFNetworking' //不显式指定依赖库版本，表示每次都获取最新版本pod 'AFNetworking', '2.0' //只使用2.0版本pod 'AFNetworking', '&gt; 2.0' //使用高于2.0的版本pod 'AFNetworking', '&gt;= 2.0' //使用大于或等于2.0的版本pod 'AFNetworking', '&lt; 2.0' //使用小于2.0的版本pod 'AFNetworking', '&lt;= 2.0' //使用小于或等于2.0的版本pod 'AFNetworking', '~&gt; 0.1.2' //使用大于等于0.1.2但小于0.2的版本pod 'AFNetworking', '~&gt;0.1' //使用大于等于0.1但小于1.0的版本pod 'AFNetworking', '~&gt;0' //使用最新版本，与不显示指定依赖库版本相同 在Podfile中引入本地仓库的方式1pod '仓库名字', :path =&gt; '本地仓库的地址' Podfile.lock：记录了已经安装的pod和其版本的文件 .podspec：记录当前仓库依赖的组件 3.CocoaPods/Xcodeproj负责所有工程文件的整合。它能够对创建并修改 .xcodeproj 和 .xcworkspace 文件。 三、CocoaPods的使用1.pod install和pod update的区别 使用pod install来安装新的pod。即在Podfile中添加或删除了pod时使用 使用pod update来更新你的已有的pod到一个更新的版本。]]></content>
