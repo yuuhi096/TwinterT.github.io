@@ -320,6 +320,214 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/03/AutoLayout的使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="TwinterT">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TwinterT">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/03/AutoLayout的使用/" itemprop="url">AutoLayout的使用</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-03T19:33:39+08:00">
+                2019-09-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/09/03/AutoLayout的使用/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/09/03/AutoLayout的使用/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.3k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="一、什么是AutoLayout"><a href="#一、什么是AutoLayout" class="headerlink" title="一、什么是AutoLayout"></a>一、什么是AutoLayout</h3><p>苹果官方的描述：Auto Layout 是一个系统，可以让你通过创建元素之间关系的数学描述来布局应用程序的用户界面，是一种基于约束的，描述性的布局系统。</p>
+<p>所以，如果我们还使用传统的绝对定位的方式，通过设定视图的Frame来布局的话，那么随着苹果设备屏幕尺寸的碎片化，那么每一种屏幕尺寸都要给界面控件设定一套合适该尺寸的Frame，这种方式想想就够吓人的！</p>
+<p>并且很多人习惯上是在viewdidload方法中初始化控件(包括init 和设置frame)，但是viewController要在viewWillLayoutSubviews的时候才能真正确定view和子view的frame。所以在没有确定view的frame的时候就去操作修改view的frame是不友好的，设置frame的效果也是无法预料的。所以按照这个特性，如果我们用设置Frame的方式布局的话就必须在viewWillLayoutSubviews中重新设定view的坐标大小，布局逻辑会变得更不清晰。而使用AutoLayout则不会有这些问题。 </p>
+<h3 id="二、autolayout的使用"><a href="#二、autolayout的使用" class="headerlink" title="二、autolayout的使用"></a>二、autolayout的使用</h3><p><strong>注：如果你是使用纯代码的方式，则在使用autolayout之前需要将translatesAutoresizingMaskIntoConstraints设置为NO并且添加约束前确定已经把需要布局的子view添加到父view上了，根据苹果官方文档的描述If this property’s value is true, the system creates a set of constraints that duplicate the behavior specified by the view’s autoresizing mask.If you want to use Auto Layout to dynamically calculate the size and position of your view, you must set this property to false, and then provide a non ambiguous, nonconflicting set of constraints for the view.意思是如果该属性为YES则会自动生成一些约束，可能会和自己设置的约束产生一些冲突，所以如果要使用autolayout需要将该属性设为NO。</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">self.view.translatesAutoresizingMaskIntoConstraints = NO;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-设置约束"><a href="#1-设置约束" class="headerlink" title="1.设置约束"></a>1.设置约束</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+(instancetype)constraintWithItem:(id)view1 attribute:(NSLayoutAttribute)attr1 relatedBy:(NSLayoutRelation)relation toItem:(nullable id)view2 attribute:(NSLayoutAttribute)attr2 multiplier:(CGFloat)multiplier constant:(CGFloat)c;</span><br></pre></td></tr></table></figure>
+
+<p>该方法表达的意思主要是：view1的某个属性（attr1）等于view2的某个属性（attr2）的值的多少倍（multiplier）加上某个常量（constant）。</p>
+<p>其中属性attribute有上、下、左、右、宽、高等，关系relation有小于等于、等于、大于等于。需要注意的是，小于等于 或 大于等于 优先会使用 等于 关系，如果 等于 不能满足，才会使用 小于 或 大于。例如设置一个 大于等于100 的关系，默认会是 100，当视图被拉伸时，100 无法被满足，尺寸才会变得更大。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">UIButton *button = [UIButton buttonWithType: UIButtonTypeSystem];</span><br><span class="line">[button setTitle: @&quot;按钮一&quot; forState: UIControlStateNormal];</span><br><span class="line">//设置自动转换为NO</span><br><span class="line">button.translatesAutoresizingMaskIntoConstraints = NO;</span><br><span class="line">//在添加约束前要把button加入到父视图中</span><br><span class="line">[self.view addSubview: button];</span><br><span class="line">//子view的上边缘离父view的上边缘40个像素</span><br><span class="line">NSLayoutConstraint *contraint1 = [NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0 constant:40.0];</span><br><span class="line">//子view的左边缘离父view的左边缘40个像素</span><br><span class="line">NSLayoutConstraint *contraint2 = [NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:40.0];</span><br><span class="line">//子view的下边缘离父view的下边缘40个像素</span><br><span class="line">NSLayoutConstraint *contraint3 = [NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-40.0];</span><br><span class="line">//子view的右边缘离父view的右边缘40个像素</span><br><span class="line">NSLayoutConstraint *contraint4 = [NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeRight multiplier:1.0 constant:-40.0];</span><br><span class="line"></span><br><span class="line">//把约束添加到父视图上</span><br><span class="line">NSArray *array = [NSArray arrayWithObjects:contraint1, contraint2, contraint3, contraint4, nil];</span><br><span class="line">[self.view addConstraints:array];</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//在设置宽和高这两个约束时，relatedBy参数使用的是 NSLayoutRelationGreaterThanOrEqual，而不是 NSLayoutRelationEqual。</span><br><span class="line">//因为 Auto Layout 是相对布局，所以通常你不应该直接设置宽度和高度这种固定不变的值，除非你很确定视图的宽度或高度需要保持不变。</span><br><span class="line">//子view的X方向居中</span><br><span class="line">NSLayoutConstraint *constraintOne = [NSLayoutConstraint constraintWithItem: button attribute:NSLayoutAttributeCenterX    relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];</span><br><span class="line">//子view的Y方向居中</span><br><span class="line">NSLayoutConstraint *constraintTwo = [NSLayoutConstraint constraintWithItem: button attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0];</span><br><span class="line">//子view的长度大于等于300</span><br><span class="line">NSLayoutConstraint *constraintThree = [NSLayoutConstraint constraintWithItem: button attribute: NSLayoutAttributeWidth relatedBy:NSLayoutRelationGreaterThanOrEqual toItem: nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:300];</span><br><span class="line">//子view的高度大于等于200</span><br><span class="line">NSLayoutConstraint *constraintFour = [NSLayoutConstraint constraintWithItem: button attribute:NSLayoutAttributeHeight relatedBy: NSLayoutRelationGreaterThanOrEqual toItem: nil attribute: NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:200];</span><br><span class="line">[self.view addConstraints: @[constraintOne, constraintTwo, constraintThree, constraintFour]];</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-修改约束"><a href="#2-修改约束" class="headerlink" title="2.修改约束"></a>2.<strong>修改约束</strong></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//方法一：从视图中获得所有的约束来寻找我们需要的约束</span><br><span class="line">NSArray *constrains = self.view.constraints;</span><br><span class="line">for (NSLayoutConstraint* constraint in constrains) &#123;</span><br><span class="line">    if (constraint.firstAttribute == NSLayoutAttributeTop) &#123;</span><br><span class="line">        constraint.constant = 10;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//方法二：在添加约束之前先将该约束记录下来，方便后面的更新修改。</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-更新约束"><a href="#3-更新约束" class="headerlink" title="3.更新约束"></a>3.更新约束</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">//下面以实现一个动画效果为例</span><br><span class="line">  </span><br><span class="line">[self.view layoutIfNeeded];</span><br><span class="line">    </span><br><span class="line">[UIView animateWithDuration:3.0 animations:^&#123;</span><br><span class="line">    //遍历查找view的heigh约束，并修改它</span><br><span class="line">    NSArray *constrains = self.view.constraints;</span><br><span class="line">    for (NSLayoutConstraint* constraint in constrains) &#123;</span><br><span class="line">        if (constraint.firstAttribute == NSLayoutAttributeHeight) &#123;</span><br><span class="line">            constraint.constant = 300;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //更新约束  在某个时刻约束会被还原成frame使视图显示</span><br><span class="line">    [self.view layoutIfNeeded];</span><br><span class="line">	&#125; completion:^(BOOL finished) &#123;</span><br><span class="line">	&#125;];</span><br></pre></td></tr></table></figure>
+
+<h3 id="三、autolayout相关的枚举类"><a href="#三、autolayout相关的枚举类" class="headerlink" title="三、autolayout相关的枚举类"></a>三、autolayout相关的枚举类</h3><h4 id="1-NSLayoutAttribute"><a href="#1-NSLayoutAttribute" class="headerlink" title="1.NSLayoutAttribute"></a>1.NSLayoutAttribute</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">typedef NS_ENUM(NSInteger, NSLayoutAttribute) &#123;</span><br><span class="line">    NSLayoutAttributeLeft = 1,</span><br><span class="line">    NSLayoutAttributeRight,</span><br><span class="line">    NSLayoutAttributeTop,</span><br><span class="line">    NSLayoutAttributeBottom,</span><br><span class="line">    NSLayoutAttributeLeading,</span><br><span class="line">    NSLayoutAttributeTrailing,</span><br><span class="line">    NSLayoutAttributeWidth,</span><br><span class="line">    NSLayoutAttributeHeight,</span><br><span class="line">    NSLayoutAttributeCenterX,</span><br><span class="line">    NSLayoutAttributeCenterY,</span><br><span class="line">    NSLayoutAttributeLastBaseline,</span><br><span class="line">    NSLayoutAttributeBaseline NS_SWIFT_UNAVAILABLE(&quot;Use &apos;lastBaseline&apos; instead&quot;) = NSLayoutAttributeLastBaseline,</span><br><span class="line">    NSLayoutAttributeFirstBaseline NS_ENUM_AVAILABLE_IOS(8_0),</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    NSLayoutAttributeLeftMargin NS_ENUM_AVAILABLE_IOS(8_0),</span><br><span class="line">    NSLayoutAttributeRightMargin NS_ENUM_AVAILABLE_IOS(8_0),</span><br><span class="line">    NSLayoutAttributeTopMargin NS_ENUM_AVAILABLE_IOS(8_0),</span><br><span class="line">    NSLayoutAttributeBottomMargin NS_ENUM_AVAILABLE_IOS(8_0),</span><br><span class="line">    NSLayoutAttributeLeadingMargin NS_ENUM_AVAILABLE_IOS(8_0),</span><br><span class="line">    NSLayoutAttributeTrailingMargin NS_ENUM_AVAILABLE_IOS(8_0),</span><br><span class="line">    NSLayoutAttributeCenterXWithinMargins NS_ENUM_AVAILABLE_IOS(8_0),</span><br><span class="line">    NSLayoutAttributeCenterYWithinMargins NS_ENUM_AVAILABLE_IOS(8_0),</span><br><span class="line">    </span><br><span class="line">    NSLayoutAttributeNotAnAttribute = 0</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-NSLayoutRelation"><a href="#2-NSLayoutRelation" class="headerlink" title="2.NSLayoutRelation"></a>2.NSLayoutRelation</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">typedef NS_ENUM(NSInteger, NSLayoutRelation) &#123;</span><br><span class="line">    NSLayoutRelationLessThanOrEqual = -1,</span><br><span class="line">    NSLayoutRelationEqual = 0,</span><br><span class="line">    NSLayoutRelationGreaterThanOrEqual = 1,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    <div>
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/03/NSURLSession的使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2644,248 +2852,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/16/Objective-C中的property/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="TwinterT">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="TwinterT">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/16/Objective-C中的property/" itemprop="url">Objective-C中的property</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-16T15:47:49+08:00">
-                2019-08-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Objective-C/" itemprop="url" rel="index">
-                    <span itemprop="name">Objective-C</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/08/16/Objective-C中的property/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/08/16/Objective-C中的property/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  593
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  2
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="原子性特性"><a href="#原子性特性" class="headerlink" title="原子性特性"></a>原子性特性</h3><ul>
-<li><h5 id="nonatomic"><a href="#nonatomic" class="headerlink" title="nonatomic"></a>nonatomic</h5><p>非原子访问 大多数情况下都适用该特性</p>
-</li>
-<li><h5 id="atomic-（默认）"><a href="#atomic-（默认）" class="headerlink" title="atomic （默认）"></a>atomic （默认）</h5><p>原子访问</p>
-</li>
-</ul>
-<h3 id="存取特性"><a href="#存取特性" class="headerlink" title="存取特性"></a>存取特性</h3><ul>
-<li><h5 id="readonly"><a href="#readonly" class="headerlink" title="readonly"></a>readonly</h5><p>表示只读属性，只会生成getter方法</p>
-</li>
-<li><h5 id="readwrite-（默认）"><a href="#readwrite-（默认）" class="headerlink" title="readwrite （默认）"></a>readwrite （默认）</h5><p>同时生成getter和setter方法</p>
-</li>
-</ul>
-<h3 id="内存管理特性"><a href="#内存管理特性" class="headerlink" title="内存管理特性"></a>内存管理特性</h3><ul>
-<li><h5 id="strong"><a href="#strong" class="headerlink" title="strong"></a>strong</h5><p>（用于对象的默认值）表示持有这个对象的强引用</p>
-</li>
-<li><h5 id="weak"><a href="#weak" class="headerlink" title="weak"></a>weak</h5><p>（用于对象）表示持有这个对象的弱应用，不会增加retainCount的值</p>
-</li>
-<li><h5 id="assign"><a href="#assign" class="headerlink" title="assign"></a>assign</h5><p>主要用于简单数据类型）简单的赋值，主要用于基本数据类型，如果用于对象则效果和weak差不多，但是不会自动赋值为nil</p>
-</li>
-<li><h5 id="copy"><a href="#copy" class="headerlink" title="copy"></a>copy</h5><p>创建一个新的对象，新的对象和旧的对象是独立的两个对象，常用于可变属性，例：NSMutableArray</p>
-</li>
-<li><h5 id="retain-（非ARC下使用）"><a href="#retain-（非ARC下使用）" class="headerlink" title="retain （非ARC下使用）"></a>retain （非ARC下使用）</h5><p>给retainCount的值加一</p>
-</li>
-</ul>
-<h3 id="存取方法重命名"><a href="#存取方法重命名" class="headerlink" title="存取方法重命名"></a>存取方法重命名</h3><ul>
-<li><h5 id="getter"><a href="#getter" class="headerlink" title="getter="></a>getter=</h5><p>对get方法重命名，在等号后面写上getter的名字</p>
-</li>
-<li><h5 id="setter"><a href="#setter" class="headerlink" title="setter="></a>setter=</h5><p>对set方法重命名，在等号后面写上setter的名字</p>
-</li>
-</ul>
-<h3 id="Nullability"><a href="#Nullability" class="headerlink" title="Nullability"></a><strong>Nullability</strong></h3><ul>
-<li><h5 id="nullable"><a href="#nullable" class="headerlink" title="nullable"></a>nullable</h5><p>对象可为空</p>
-</li>
-<li><h5 id="nonnull"><a href="#nonnull" class="headerlink" title="nonnull"></a>nonnull</h5><p>对象不可为空</p>
-<p>由于在大多数情况下属性都是nonnull的，所以苹果公司定义了两个宏，NS_ASSUME_NONNULL_BEGIN和NS_ASSUME_NONNULL_END，将所有属性包在这两个宏中，就无需写<strong>nonnull</strong>修饰语了，只需要在「可为空」的属性里，写上<strong>nullable</strong>即可</p>
-</li>
-<li><h5 id="null-unspecified"><a href="#null-unspecified" class="headerlink" title="null_unspecified"></a>null_unspecified</h5><p>未指定</p>
-</li>
-<li><h5 id="null-resettable"><a href="#null-resettable" class="headerlink" title="null_resettable"></a>null_resettable</h5><p>调用setter去reset属性时，可以传入nil，但是getter返回值，不为空。这样即使赋值为nil，也会返回一个非空的值</p>
-</li>
-</ul>
-<p>注意：如果设置为null_resettable，则要重写setter或getter其中之一，自己做判断，确保真正返回的值不是nil。否则报警告：Synthesized setter ‘setName:’ for null_resettable property ‘name’ does not handle nil</p>
-<h3 id="对上述特性的使用总结"><a href="#对上述特性的使用总结" class="headerlink" title="对上述特性的使用总结"></a>对上述特性的使用总结</h3><ol>
-<li>几乎所有的情况，都写上nonatomic</li>
-<li>对外只读的，写上readonly</li>
-<li>一般的对象属性，写上strong(默认)</li>
-<li>需要解决循环引用的问题使用weak</li>
-<li>有mutable的对象属性，strong改为copy</li>
-<li>基本数据类型(int, float ,BOOL)，使用assign</li>
-</ol>
-<h3 id="一些补充"><a href="#一些补充" class="headerlink" title="一些补充"></a>一些补充</h3><ul>
-<li>在.m文件中写上 @dynamic <property_name> 表示不自动生成getter和setter方法</property_name></li>
-<li>在一般情况下尽量使用accessor方法(即点表达式)来访问一个property，而不是直接访问它对应的实例变量。但是在一个对象的init方法、deallocate方法和自定义的accessor方法中不建议调用accessor方法。</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    <div>
-      
-    </div>
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2936,7 +2902,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2958,7 +2924,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -3056,7 +3022,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共17k字</span>
+  <span class="post-count">博客全站共18.3k字</span>
 </div>
 
         
