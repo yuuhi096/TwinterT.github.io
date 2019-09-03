@@ -320,6 +320,313 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/03/iOS的消息通知/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="TwinterT">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TwinterT">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/03/iOS的消息通知/" itemprop="url">iOS的消息通知</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-03T17:50:57+08:00">
+                2019-09-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/09/03/iOS的消息通知/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/09/03/iOS的消息通知/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.3k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  4
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="一、消息通知的介绍"><a href="#一、消息通知的介绍" class="headerlink" title="一、消息通知的介绍"></a>一、消息通知的介绍</h3><p>属于设计模式中的观察者模式，观察者只要向消息中心注册， 即可接受其他对象发送来的消息，消息发送者和消息接受者两者可以互相一无所知，完全解耦。只是需要注意的是，观察者向消息中心注册以后，在不需要接受消息时需要向消息中心注销。</p>
+<h3 id="二、消息通知的使用"><a href="#二、消息通知的使用" class="headerlink" title="二、消息通知的使用"></a>二、消息通知的使用</h3><h4 id="1-观察者注册消息通知"><a href="#1-观察者注册消息通知" class="headerlink" title="1.观察者注册消息通知"></a>1.观察者注册消息通知</h4><p>可在ViewController.m的ViewWillAppear:方法中进行广播的注册</p>
+<h5 id="1-void-addObserver-id-observer-selector-SEL-aSelector-name-NSNotificationName-aName-object-id-anObject"><a href="#1-void-addObserver-id-observer-selector-SEL-aSelector-name-NSNotificationName-aName-object-id-anObject" class="headerlink" title="1.- (void)addObserver:(id)observer selector:(SEL)aSelector name:(NSNotificationName)aName object:(id)anObject;"></a>1.- (<strong>void</strong>)addObserver:(<strong>id</strong>)observer selector:(<strong>SEL</strong>)aSelector name:(NSNotificationName)aName object:(<strong>id</strong>)anObject;</h5><p>例：[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(methodName) name:@”notificationName” object:sender];</p>
+<ul>
+<li>observer:传入需要添加为观察者的对象</li>
+<li>aSelector:传入接受到广播后的处理方法，该方法只能有一个参数 (NSNotification*)notification</li>
+<li>aName:要接受的广播的名字</li>
+<li>anObject:发送广播的对象</li>
+</ul>
+<p>注意：若name为空，则object不应为空，这样就会注册接受由object发送的所有广播。同理当name不为空，object为空时，这样会接受所有广播名字为name的广播。</p>
+<h4 id="2-观察者注销消息通知"><a href="#2-观察者注销消息通知" class="headerlink" title="2.观察者注销消息通知"></a>2.观察者注销消息通知</h4><p>可在ViewController.m的ViewWillDisappear:方法中进行广播的注销，以下是注销广播的两种方法，其中第一个方法是单个注销，第二个方法是全部注销</p>
+<h5 id="1-void-removeObserver-id-observer-name-NSNotificationName-aName-object-id-anObject"><a href="#1-void-removeObserver-id-observer-name-NSNotificationName-aName-object-id-anObject" class="headerlink" title="1.- (void)removeObserver:(id)observer name:(NSNotificationName)aName object:(id)anObject;"></a>1.- (<strong>void</strong>)removeObserver:(<strong>id</strong>)observer name:(NSNotificationName)aName object:(<strong>id</strong>)anObject;</h5><p>例：[[NSNotificationCenter defaultCenter] removeObserver:self name:@”notificationName” object:sender];</p>
+<ul>
+<li>observer:需要注销的对象</li>
+<li>aName:需要注销的接受的广播</li>
+<li>sender:需要注销的接收对象</li>
+</ul>
+<h5 id="2-void-removeObserver-id-observer"><a href="#2-void-removeObserver-id-observer" class="headerlink" title="2.- (void)removeObserver:(id)observer;"></a>2.- (<strong>void</strong>)removeObserver:(<strong>id</strong>)observer;</h5><p>例：[[NSNotificationCenter defaultCenter] removeObserver:self];</p>
+<ul>
+<li>observer:需要注销的对象</li>
+</ul>
+<h4 id="3-发送消息通知"><a href="#3-发送消息通知" class="headerlink" title="3.发送消息通知"></a>3.发送消息通知</h4><h5 id="1-void-postNotificationName-NSNotificationName-aName-object-id-anObject-userInfo-NSDictionary-aUserInfo"><a href="#1-void-postNotificationName-NSNotificationName-aName-object-id-anObject-userInfo-NSDictionary-aUserInfo" class="headerlink" title="1.- (void)postNotificationName:(NSNotificationName)aName object:(id)anObject userInfo:(NSDictionary *)aUserInfo;"></a>1.- (<strong>void</strong>)postNotificationName:(NSNotificationName)aName object:(<strong>id</strong>)anObject userInfo:(NSDictionary *)aUserInfo;</h5><ul>
+<li>aName:通知的名字</li>
+<li>anObject:发送者对象即sender</li>
+<li>aUserInfo:为NSDictionary对象，可为空</li>
+</ul>
+<h5 id="2-void-postNotification-NSNotification-notification"><a href="#2-void-postNotification-NSNotification-notification" class="headerlink" title="2.- (void)postNotification:(NSNotification *)notification;"></a>2.- (<strong>void</strong>)postNotification:(NSNotification *)notification;</h5><ul>
+<li>notification:需要发送的通知</li>
+</ul>
+<h4 id="三、常用的系统消息通知"><a href="#三、常用的系统消息通知" class="headerlink" title="三、常用的系统消息通知"></a>三、常用的系统消息通知</h4><h4 id="1-音频相关"><a href="#1-音频相关" class="headerlink" title="1.音频相关"></a>1.音频相关</h4><ul>
+<li>AVAudioSessionInterruptionNotification //音频中断出现</li>
+<li>AVAudioSessionRouteChangeNotification //系统的音频线路发生改变</li>
+<li>AVAudioSessionMediaServicesWereLostNotification //媒体服务终止</li>
+<li>AVAudioSessionMediaServicesWereResetNotification //媒体服务重新启动</li>
+</ul>
+<h4 id="2-视频相关"><a href="#2-视频相关" class="headerlink" title="2.视频相关"></a>2.视频相关</h4><p>AVPlayerItemTimeJumpedNotification // 播放时间跳跃</p>
+<p>AVPlayerItemDidPlayToEndTimeNotification // 播放结束</p>
+<p>AVPlayerItemFailedToPlayToEndTimeNotification // 没能播放到最后</p>
+<p>AVPlayerItemPlaybackStalledNotification // 播放抛锚</p>
+<p>AVPlayerItemNewAccessLogEntryNotification // 添加新的访问日志条目</p>
+<p>AVPlayerItemNewErrorLogEntryNotification // 添加新的错误日志条目</p>
+<p>MPMediaLibraryDidChangeNotification; //媒体库发生改变</p>
+<p>MPMediaPlaybackIsPreparedToPlayDidChangeNotification //后台准备播放发生改变</p>
+<p>MPMoviePlayerScalingModeDidChangeNotification; //视频缩放填充模式发生改变</p>
+<p>MPMoviePlayerPlaybackDidFinishNotification; //媒体播放完成或用户手动退出</p>
+<p>MPMoviePlayerPlaybackStateDidChangeNotification //播放状态改变</p>
+<p>MPMoviePlayerLoadStateDidChangeNotification //媒体网络加载状态改变</p>
+<p>MPMoviePlayerNowPlayingMovieDidChangeNotification //当前播放的媒体内容发生改变</p>
+<p>MPMoviePlayerWillEnterFullscreenNotification //将进入全屏</p>
+<p>MPMoviePlayerDidEnterFullscreenNotification //进入全屏后</p>
+<p>MPMoviePlayerWillExitFullscreenNotification //将要退出全屏</p>
+<p>MPMoviePlayerDidExitFullscreenNotification //退出全屏后</p>
+<p>MPMoviePlayerIsAirPlayVideoActiveDidChangeNotification //当媒体开始通过AirPlay播放或者结束AirPlay</p>
+<p>MPMoviePlayerReadyForDisplayDidChangeNotification //视频显示状态改变</p>
+<p>MPMovieMediaTypesAvailableNotification //确定了媒体可用类型后</p>
+<p>MPMovieSourceTypeAvailableNotification // 确定了媒体来源后</p>
+<p>MPMovieDurationAvailableNotification //确定了媒体播放时长后</p>
+<p>MPMovieNaturalSizeAvailableNotification //确定了媒体的实际尺寸后</p>
+<p>MPMoviePlayerThumbnailImageRequestDidFinishNotification //缩略图请求完成之后</p>
+<p>MPMoviePlayerTimedMetadataUpdatedNotification //同步元数据发生更新</p>
+<p>MPMoviePlayerContentPreloadDidFinishNotification //媒体内容预加载完成</p>
+<p>MPMusicPlayerControllerPlaybackStateDidChangeNotification; //播放状态改变</p>
+<p>MPMusicPlayerControllerNowPlayingItemDidChangeNotification; //播放内容改变</p>
+<p>MPMusicPlayerControllerVolumeDidChangeNotification; //音量发生改变</p>
+<h4 id="3-拍照，录像相关"><a href="#3-拍照，录像相关" class="headerlink" title="3.拍照，录像相关"></a>3.拍照，录像相关</h4><p>AVCaptureDeviceWasConnectedNotification //输入设备已连接</p>
+<p>AVCaptureDeviceWasDisconnectedNotification //输入设备失去连接</p>
+<p>AVCaptureDeviceSubjectAreaDidChangeNotification //捕获区域发生改变</p>
+<p>AVCaptureInputPortFormatDescriptionDidChangeNotification //输入设备端口描述改变</p>
+<p>AVCaptureSessionRuntimeErrorNotification //媒体会话运行错误</p>
+<p>AVCaptureSessionDidStartRunningNotification //媒体会话开始运行</p>
+<p>AVCaptureSessionDidStopRunningNotification //媒体会话停止运行</p>
+<p>AVCaptureSessionWasInterruptedNotification //媒体会话中断</p>
+<p>AVCaptureSessionInterruptionEndedNotification //媒体会话中断停止</p>
+<h4 id="4-常用视图相关"><a href="#4-常用视图相关" class="headerlink" title="4.常用视图相关"></a>4.常用视图相关</h4><p>UITableViewSelectionDidChangeNotification; //TableView选中发生改变</p>
+<p>UITextFieldTextDidBeginEditingNotification; //TextField开始编辑</p>
+<p>UITextFieldTextDidEndEditingNotification; //TextField发生改变</p>
+<p>UITextFieldTextDidChangeNotification; //TextField结束编辑</p>
+<p>UITextViewTextDidBeginEditingNotification; //TextView开始编辑</p>
+<p>UITextViewTextDidChangeNotification; //TextView发生改变</p>
+<p>UITextViewTextDidEndEditingNotification; //TextView结束编辑</p>
+<p>UIWindowDidBecomeVisibleNotification; //window激活并展示在界面的时候触发</p>
+<p>UIWindowDidBecomeHiddenNotification; //当window隐藏的时候触发</p>
+<p>UIWindowDidBecomeKeyNotification; //当window被设置为keyWindow时触发</p>
+<p>UIWindowDidResignKeyNotification; //当window的key位置被取代时触发</p>
+<p>UIKeyboardWillShowNotification; //键盘将弹出</p>
+<p>UIKeyboardDidShowNotification; //键盘弹出</p>
+<p>UIKeyboardWillHideNotification; //键盘将要隐藏</p>
+<p>UIKeyboardDidHideNotification; //键盘隐藏</p>
+<p>UIKeyboardWillChangeFrameNotification //键盘frame将发生改变</p>
+<p>UIKeyboardDidChangeFrameNotification //键盘frame发生改变后</p>
+<h4 id="5-日期，时间相关"><a href="#5-日期，时间相关" class="headerlink" title="5.日期，时间相关"></a>5.日期，时间相关</h4><p>NSCalendarDayChangedNotification //日期发生改变</p>
+<p>NSSystemClockDidChangeNotification //系统时钟发生改变</p>
+<p>NSSystemTimeZoneDidChangeNotification //系统时区发生改变</p>
+<h4 id="6-线程相关"><a href="#6-线程相关" class="headerlink" title="6.线程相关"></a>6.线程相关</h4><p>NSWillBecomeMultiThreadedNotification; //将变成多线程</p>
+<p>NSDidBecomeSingleThreadedNotification; //变成了单线程</p>
+<p>NSThreadWillExitNotification; //线程退出</p>
+<h4 id="7-程序相关"><a href="#7-程序相关" class="headerlink" title="7.程序相关"></a>7.程序相关</h4><p>UIApplicationDidEnterBackgroundNotification //程序进入后台</p>
+<p>UIApplicationWillEnterForegroundNotification //程序将进入前台</p>
+<p>UIApplicationDidFinishLaunchingNotification; //程序加载完成</p>
+<p>UIApplicationDidBecomeActiveNotification; //程序变成激活状态</p>
+<p>UIApplicationWillResignActiveNotification; //程序将失去激活状态</p>
+<p>UIApplicationDidReceiveMemoryWarningNotification; //接收到内存警告</p>
+<p>UIApplicationWillTerminateNotification; //程序将终止</p>
+<p>UIApplicationSignificantTimeChangeNotification; //新的一天开始或时区发生变化</p>
+<p>UIApplicationWillChangeStatusBarOrientationNotification; //将改变状态栏方向</p>
+<p>UIApplicationDidChangeStatusBarOrientationNotification; //状态栏方向以改变</p>
+<p>UIApplicationWillChangeStatusBarFrameNotification; //将改变状态栏frame</p>
+<p>UIApplicationDidChangeStatusBarFrameNotification; //状态栏frame发生改变</p>
+<p>UIApplicationBackgroundRefreshStatusDidChangeNotification //后台刷新状态改变</p>
+<p>UIApplicationUserDidTakeScreenshotNotification //截屏时触发通知</p>
+<h4 id="8-硬件设备相关"><a href="#8-硬件设备相关" class="headerlink" title="8.硬件设备相关"></a>8.硬件设备相关</h4><p>UIDeviceOrientationDidChangeNotification; //设备方向改变</p>
+<p>UIDeviceBatteryStateDidChangeNotification //电池状态改变</p>
+<p>UIDeviceBatteryLevelDidChangeNotification //电池电量改变</p>
+<p>UIDeviceProximityStateDidChangeNotification //距离感应器状态发生改变</p>
+<h4 id="9-其它"><a href="#9-其它" class="headerlink" title="9.其它"></a>9.其它</h4><p>UILocalNotificationDefaultSoundName //本地通知声音</p>
+<p>UIPasteboardChangedNotification; //粘贴板发生改变</p>
+<p>UIPasteboardRemovedNotification; //粘贴板内容移除</p>
+<p>NSUserDefaultsDidChangeNotification; //NSUserDefaults发生改变</p>
+<p>NSBundleDidLoadNotification; //bundle加载完成</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    <div>
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/03/application和view的生命周期/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2635,277 +2942,13 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/14/Objective-C的基本使用/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="TwinterT">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="TwinterT">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/14/Objective-C的基本使用/" itemprop="url">Objective-C的基本使用</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-14T23:40:52+08:00">
-                2019-08-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Objective-C/" itemprop="url" rel="index">
-                    <span itemprop="name">Objective-C</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/08/14/Objective-C的基本使用/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/08/14/Objective-C的基本使用/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  958
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="一、OC的基础语法"><a href="#一、OC的基础语法" class="headerlink" title="一、OC的基础语法"></a>一、OC的基础语法</h3><p>Objective-C是在C语言的基础上，增加了一些自己独有的特性，将面向过程的C语言添加了面向对象编程的功能，由于之前已经有C的经验，下面只介绍Objective-C的特性</p>
-<h5 id="关键字"><a href="#关键字" class="headerlink" title="关键字"></a>关键字</h5><p>OC中独有的大部分关键字是以@开头的，常用的关键字有：@interface、@implementation、@end @public、@protected、@private、@selector @try、@catch、@throw、@finally @protocol、@optional、@required、@class @property、@synthesize、@dynamic等。以及一些不以@开头的但是是对C的扩展的关键字：self、super、id、instancetype等。</p>
-<h5 id="import"><a href="#import" class="headerlink" title="#import"></a>#import</h5><p>和C中的#include不同的是import不会重复包含相同的头文件。</p>
-<h5 id="NSLog"><a href="#NSLog" class="headerlink" title="NSLog"></a>NSLog</h5><p>NSLog输出完毕信息之后会默认加一个\n，如果我们手动加了一个\n，NSLog的自动换行就会失效。</p>
-<p>在输出信息的同时还会输出一些与程序有关的其他信息(系统时间、程序名、进程ID、线程ID)。</p>
-<p>NSLog函数支持printf函数的全部格式控制符，其用法也相同。</p>
-<p>NSLog函数的字符串参数前面必须要加一个@符号，这是OC里的字符串格式。</p>
-<p>NSLog可以使用%@格式控制符输出对象，而printf不能输出对象。</p>
-<p>NSLog函数的第一个参数是NSString类型的指针，所以必须给一个OC字符串。</p>
-<h3 id="二、OC的基本数据类型"><a href="#二、OC的基本数据类型" class="headerlink" title="二、OC的基本数据类型"></a>二、OC的基本数据类型</h3><h5 id="总览"><a href="#总览" class="headerlink" title="总览"></a>总览</h5><p><img src="/2019/08/14/Objective-C的基本使用/180114250.png" alt="数据类型总览"></p>
-<h5 id="自动数据类型转换顺序"><a href="#自动数据类型转换顺序" class="headerlink" title="自动数据类型转换顺序"></a>自动数据类型转换顺序</h5><p>short –&gt; int –&gt; long –&gt; long long –&gt; float –&gt; double –&gt; long double（注意：整型往浮点型自动转换）</p>
-<p>强制类型转换：整型转化为浮点型时基本不会有太大的变化，而当浮点转化为整型时，数值的小数部分会直接舍去</p>
-<h5 id="OC中NSLog输出函数的格式"><a href="#OC中NSLog输出函数的格式" class="headerlink" title="OC中NSLog输出函数的格式"></a>OC中NSLog输出函数的格式</h5><table>
-<thead>
-<tr>
-<th><strong>格式字符</strong></th>
-<th><strong>说明</strong></th>
-<th><strong>格式字符</strong></th>
-<th><strong>说明</strong></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>x</td>
-<td>无符号十六进制</td>
-<td>g</td>
-<td>自动选用%f或%e输出，保证以最简形式输出，并不会输出无意义的0</td>
-</tr>
-<tr>
-<td>u</td>
-<td>无符号十进制</td>
-<td>p</td>
-<td>以十六尽职形式输出指针变量所代表的地址值</td>
-</tr>
-<tr>
-<td>s</td>
-<td>输出C风格字符串</td>
-<td>l</td>
-<td>用在d、o、x、u之前用于输出长整型；在f、e、g之前用于输出长浮点型</td>
-</tr>
-<tr>
-<td>o</td>
-<td>无符号八进制</td>
-<td>e</td>
-<td>指数形式输出，数值不分默认输出6位小数</td>
-</tr>
-<tr>
-<td>m</td>
-<td>用于制定输出数据所占的最小宽度为m位</td>
-<td>.n</td>
-<td>对于浮点数，表示输出n位小数，对于字符串，表示截取的字符个数</td>
-</tr>
-<tr>
-<td>d</td>
-<td>带符号十进制</td>
-<td>f</td>
-<td>小数形式输出，默认输出6位小数</td>
-</tr>
-<tr>
-<td>c</td>
-<td>字符形式，只输出一个字符</td>
-<td>@</td>
-<td>输出OC对象</td>
-</tr>
-<tr>
-<td>-</td>
-<td>表述输出的数值向左边对齐</td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<h5 id="枚举（enum）"><a href="#枚举（enum）" class="headerlink" title="枚举（enum）"></a>枚举（enum）</h5><p>枚举的本质是无符号整数，可以通过直接用数值的方式给枚举变量进行赋值。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">typedef NS_OPTIONS(NSUInteger, Event)</span><br><span class="line">&#123;</span><br><span class="line">  EventTouchDown = 1 &lt;&lt; 0,</span><br><span class="line">  EventTouchDownRepeat = 1 &lt;&lt; 1,</span><br><span class="line">  EventTouchDragInside = 1 &lt;&lt; 2</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">typedef NS_ENUM(NSInteger, Alignment)</span><br><span class="line">&#123;</span><br><span class="line">  AlignmentCenter = 1,</span><br><span class="line">  AlignmentLeft = 2,</span><br><span class="line">  AlignmentRight = 3</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>在使用或运算操作两个枚举值时，C++默认为运算结果的数据类型是枚举的底层数据类型即NSUInteger,且C++不允许它隐式转换为枚举类型本身，所以C++模式下定义了NS_OPTIONS宏以保证不出现类型转换。</p>
-<p>所以在我们需要同时存在多个枚举同时使用时要使用NS_OPTIONS，普通情况下使用NS_ENUM即可。</p>
-<h5 id="布尔（BOOL）"><a href="#布尔（BOOL）" class="headerlink" title="布尔（BOOL）"></a>布尔（BOOL）</h5><p>OC的底层实际上是使用signed char来代表BOOL，所以如果一个非0整数的低八位表示的数为0，则其转化位BOOL类型值为NO。即只会取最后8位数据来进行判断。</p>
-<h5 id="NSInterger"><a href="#NSInterger" class="headerlink" title="NSInterger"></a>NSInterger</h5><p>大致相当于long型整数</p>
-<p>NSUInterger</p>
-<p>大致相当于unsigned long型整数</p>
-<h5 id="CGFLoat"><a href="#CGFLoat" class="headerlink" title="CGFLoat"></a>CGFLoat</h5><p>在64位平台大致相当于double，在32位系统大致相当于float</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    <div>
-      
-    </div>
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+  </nav>
+
 
 
           </div>
@@ -2949,7 +2992,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2971,7 +3014,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -3069,7 +3112,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共14.5k字</span>
+  <span class="post-count">博客全站共15.8k字</span>
 </div>
 
         
